@@ -35,13 +35,10 @@ class PurchaseService
         string $paymentProcessor, 
         ?string $couponCode = null
     ): array {
-        // Расчет цены
         $priceData = $this->priceCalculator->calculate($productId, $taxNumber, $couponCode);
         
-        // Получение платежного процессора
         $processor = $this->paymentProcessorFactory->create($paymentProcessor);
         
-        // Обработка платежа
         $success = $processor->processPayment($priceData['finalPrice']);
         
         return [

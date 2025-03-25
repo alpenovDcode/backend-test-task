@@ -19,25 +19,21 @@ class TaxNumberValidatorService
     
     private function validateGermanTaxNumber(string $taxNumber): bool
     {
-        // Формат DE + 9 цифр
         return preg_match('/^DE\d{9}$/', $taxNumber) === 1;
     }
     
     private function validateItalianTaxNumber(string $taxNumber): bool
     {
-        // Формат IT + 11 цифр
         return preg_match('/^IT\d{11}$/', $taxNumber) === 1;
     }
     
     private function validateGreekTaxNumber(string $taxNumber): bool
     {
-        // Формат GR + 9 цифр
         return preg_match('/^GR\d{9}$/', $taxNumber) === 1;
     }
     
     private function validateFrenchTaxNumber(string $taxNumber): bool
     {
-        // Формат FR + 2 буквы + 9 цифр
         return preg_match('/^FR[A-Za-z]{2}\d{9}$/', $taxNumber) === 1;
     }
     

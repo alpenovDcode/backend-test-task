@@ -14,13 +14,9 @@ class PaypalAdapter implements PaymentProcessorInterface
         $this->paypalProcessor = $paypalProcessor;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function processPayment(float $amount): bool
     {
         try {
-            // PayPal ожидает сумму в минимальных единицах валюты (центы)
             $amountInCents = (int) ($amount * 100);
             $this->paypalProcessor->pay($amountInCents);
             return true;

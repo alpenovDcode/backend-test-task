@@ -7,10 +7,10 @@ class TaxService
     private TaxNumberValidatorService $taxNumberValidator;
     
     private const TAX_RATES = [
-        'DE' => 19, // Германия - 19%
-        'IT' => 22, // Италия - 22%
-        'FR' => 20, // Франция - 20%
-        'GR' => 24, // Греция - 24%
+        'DE' => 19,
+        'IT' => 22,
+        'FR' => 20,
+        'GR' => 24,
     ];
 
     public function __construct(TaxNumberValidatorService $taxNumberValidator)

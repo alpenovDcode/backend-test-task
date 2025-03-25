@@ -33,7 +33,6 @@ class PriceCalculatorService
         $discountedPrice = $basePrice;
         $discountAmount = 0;
         
-        // Применяем купон, если указан
         if ($couponCode) {
             $coupon = $this->couponService->findByCode($couponCode);
             
@@ -45,7 +44,6 @@ class PriceCalculatorService
             $discountedPrice = $basePrice - $discountAmount;
         }
         
-        // Расчет налога на цену после скидки
         $taxAmount = $this->taxService->calculateTax($discountedPrice, $taxNumber);
         $finalPrice = $discountedPrice + $taxAmount;
         
@@ -61,7 +59,6 @@ class PriceCalculatorService
     private function calculateDiscount(float $basePrice, Coupon $coupon): float
     {
         if ($coupon->isFixed()) {
-            // Фиксированная скидка не может быть больше базовой цены
             return min($basePrice, $coupon->getValue());
         } elseif ($coupon->isPercentage()) {
             return $basePrice * ($coupon->getValue() / 100);

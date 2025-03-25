@@ -10,14 +10,12 @@ class CouponService
     {
         $coupons = [];
         
-        // Пример купона с фиксированной скидкой - 10 евро
         $fixedCoupon = new Coupon();
         $fixedCoupon->setCode('D10')
                     ->setType(Coupon::TYPE_FIXED)
                     ->setValue(10);
         $coupons['D10'] = $fixedCoupon;
         
-        // Пример купона с процентной скидкой 15%
         $percentCoupon = new Coupon();
         $percentCoupon->setCode('D15')
                       ->setType(Coupon::TYPE_PERCENTAGE)

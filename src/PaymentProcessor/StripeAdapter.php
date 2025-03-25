@@ -14,12 +14,8 @@ class StripeAdapter implements PaymentProcessorInterface
         $this->stripeProcessor = $stripeProcessor;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function processPayment(float $amount): bool
     {
-        // Stripe уже работает с суммой в валюте, поэтому конвертация не нужна
         $result = $this->stripeProcessor->processPayment($amount);
         
         if (!$result) {

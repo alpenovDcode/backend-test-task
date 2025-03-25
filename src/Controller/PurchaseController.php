@@ -2,53 +2,59 @@
 
 namespace App\Controller;
 
+use App\DTO\PurchaseRequest;
 use App\Exception\PaymentException;
 use App\Service\PurchaseService;
-use App\Service\TaxNumberValidatorService;
+use App\Service\ValidationErrorFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PurchaseController extends AbstractController
 {
     private PurchaseService $purchaseService;
-    private TaxNumberValidatorService $taxNumberValidator;
+    private ValidatorInterface $validator;
+    private ValidationErrorFormatter $errorFormatter;
 
     public function __construct(
         PurchaseService $purchaseService,
-        TaxNumberValidatorService $taxNumberValidator
+        ValidatorInterface $validator,
+        ValidationErrorFormatter $errorFormatter
     ) {
         $this->purchaseService = $purchaseService;
-        $this->taxNumberValidator = $taxNumberValidator;
+        $this->validator = $validator;
+        $this->errorFormatter = $errorFormatter;
     }
 
     #[Route('/purchase', name: 'app_purchase', methods: ['POST'])]
     public function purchase(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        
-        // Базовая валидация входных данных
-        if (!isset($data['product']) || !is_numeric($data['product'])) {
-            return new JsonResponse(['error' => 'Invalid product ID'], Response::HTTP_BAD_REQUEST);
+        if (!is_array($data)) {
+            return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
         
-        if (!isset($data['taxNumber']) || !$this->taxNumberValidator->validate($data['taxNumber'])) {
-            return new JsonResponse(['error' => 'Invalid tax number'], Response::HTTP_BAD_REQUEST);
-        }
+        $purchaseRequest = PurchaseRequest::fromArray($data);
         
-        if (!isset($data['paymentProcessor']) || !is_string($data['paymentProcessor'])) {
-            return new JsonResponse(['error' => 'Payment processor is required'], Response::HTTP_BAD_REQUEST);
+        $violations = $this->validator->validate($purchaseRequest);
+        if (count($violations) > 0) {
+            return new JsonResponse(
+                $this->errorFormatter->format($violations),
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         }
-        
-        $productId = (int) $data['product'];
-        $taxNumber = $data['taxNumber'];
-        $paymentProcessor = $data['paymentProcessor'];
-        $couponCode = $data['couponCode'] ?? null;
         
         try {
-            $result = $this->purchaseService->process($productId, $taxNumber, $paymentProcessor, $couponCode);
+            $result = $this->purchaseService->process(
+                $purchaseRequest->getProduct(),
+                $purchaseRequest->getTaxNumber(),
+                $purchaseRequest->getPaymentProcessor(),
+                $purchaseRequest->getCouponCode()
+            );
+            
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Payment processed successfully',
@@ -62,8 +68,10 @@ class PurchaseController extends AbstractController
                 'code' => $e->getCode()
             ], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
-            // Общая обработка других ошибок
-            return new JsonResponse(['error' => 'An unexpected error occurred: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(
+                ['error' => 'An unexpected error occurred: ' . $e->getMessage()],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 } 
