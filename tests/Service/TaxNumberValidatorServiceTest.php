@@ -4,6 +4,7 @@ namespace App\Tests\Service;
 
 use App\Service\TaxNumberValidatorService;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TaxNumberValidatorServiceTest extends TestCase
 {
@@ -14,31 +15,25 @@ class TaxNumberValidatorServiceTest extends TestCase
         $this->taxNumberValidator = new TaxNumberValidatorService();
     }
 
-    /**
-     * @dataProvider validTaxNumbersProvider
-     */
+    #[DataProvider('validTaxNumbersProvider')]
     public function testValidTaxNumbers(string $taxNumber): void
     {
         $this->assertTrue($this->taxNumberValidator->validate($taxNumber));
     }
 
-    /**
-     * @dataProvider invalidTaxNumbersProvider
-     */
+    #[DataProvider('invalidTaxNumbersProvider')]
     public function testInvalidTaxNumbers(string $taxNumber): void
     {
         $this->assertFalse($this->taxNumberValidator->validate($taxNumber));
     }
 
-    /**
-     * @dataProvider countryCodesProvider
-     */
-    public function testGetCountryCode(string $taxNumber, string $expectedCountryCode): void
+    #[DataProvider('countryCodesProvider')]
+    public function testGetCountryCode(string $taxNumber, ?string $expectedCountryCode): void
     {
         $this->assertEquals($expectedCountryCode, $this->taxNumberValidator->getCountryCode($taxNumber));
     }
 
-    public function validTaxNumbersProvider(): array
+    public static function validTaxNumbersProvider(): array
     {
         return [
             'German tax number' => ['DE123456789'],
@@ -48,7 +43,7 @@ class TaxNumberValidatorServiceTest extends TestCase
         ];
     }
 
-    public function invalidTaxNumbersProvider(): array
+    public static function invalidTaxNumbersProvider(): array
     {
         return [
             'Empty string' => [''],
@@ -64,7 +59,7 @@ class TaxNumberValidatorServiceTest extends TestCase
         ];
     }
 
-    public function countryCodesProvider(): array
+    public static function countryCodesProvider(): array
     {
         return [
             'German' => ['DE123456789', 'DE'],

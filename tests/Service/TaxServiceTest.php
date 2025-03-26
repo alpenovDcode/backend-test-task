@@ -5,6 +5,7 @@ namespace App\Tests\Service;
 use App\Service\TaxNumberValidatorService;
 use App\Service\TaxService;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TaxServiceTest extends TestCase
 {
@@ -17,9 +18,7 @@ class TaxServiceTest extends TestCase
         $this->taxService = new TaxService($this->taxNumberValidator);
     }
 
-    /**
-     * @dataProvider taxRateDataProvider
-     */
+    #[DataProvider('taxRateDataProvider')]
     public function testGetTaxRateForCountry(string $countryCode, float $expectedRate): void
     {
         $rate = $this->taxService->getTaxRateForCountry($countryCode);
@@ -32,9 +31,7 @@ class TaxServiceTest extends TestCase
         $this->taxService->getTaxRateForCountry('XX');
     }
 
-    /**
-     * @dataProvider taxCalculationDataProvider
-     */
+    #[DataProvider('taxCalculationDataProvider')]
     public function testCalculateTax(float $price, string $taxNumber, string $countryCode, float $expectedTax): void
     {
         $this->taxNumberValidator->method('validate')
@@ -56,7 +53,7 @@ class TaxServiceTest extends TestCase
         $this->taxService->calculateTax(100, 'INVALID');
     }
 
-    public function taxRateDataProvider(): array
+    public static function taxRateDataProvider(): array
     {
         return [
             'Germany' => ['DE', 19.0],
@@ -66,7 +63,7 @@ class TaxServiceTest extends TestCase
         ];
     }
 
-    public function taxCalculationDataProvider(): array
+    public static function taxCalculationDataProvider(): array
     {
         return [
             'German tax on 100 euros' => [100, 'DE123456789', 'DE', 19.0],
