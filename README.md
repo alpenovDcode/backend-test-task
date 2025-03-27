@@ -1,3 +1,60 @@
+## Установка и настройка
+ 
+ 1. Склонируйте репозиторий:
+ ```bash
+ git clone <repository_url>
+ cd backend-test-task
+ ```
+ 
+ 2. Скопируйте файлы конфигурации:
+ ```bash
+ cp .env.example .env
+ cp .env.test.example .env.test
+ ```
+ 
+ 3. Настройка переменных окружения в файлах `.env` и `.env.test`:
+ - Замените `your_app_secret_here` на случайную строку в `.env`
+ - Замените `your_test_app_secret_here` на случайную строку в `.env.test`
+ 
+ 4. Запустите проект через Docker:
+ ```bash
+ make up
+ ```
+ 
+ ## API Endpoints
+ 
+ ### Расчет цены
+ POST `/calculate-price`
+ 
+ Параметры запроса:
+ ```json
+ {
+     "product": 1,
+     "taxNumber": "DE123456789",
+     "couponCode": "D15" // опционально
+ }
+ ```
+ 
+ ### Покупка
+ POST `/purchase`
+ 
+ Параметры запроса:
+ ```json
+ {
+     "product": 1,
+     "taxNumber": "DE123456789",
+     "couponCode": "D15", // опционально
+     "paymentProcessor": "paypal" // или "stripe"
+ }
+ ```
+ 
+ ## Тестирование
+ 
+ Для запуска тестов выполните:
+ ```bash
+ docker exec -it backend-test-task-sio_test-1 vendor/bin/phpunit
+ ```
+
 # Написать Symfony REST-приложение для расчета цены продукта и проведения оплаты
 
 Необходимо реализовать 2 эндпоинта:
