@@ -1,4 +1,14 @@
-### Calculate Price
+### Расчет цены для iPhone без купона (Германия, 19% налог)
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE123456789"
+}
+
+### Расчет цены для iPhone с купоном на процентную скидку (Германия, 19% налог)
 POST http://127.0.0.1:8337/calculate-price
 Accept: application/json
 Content-Type: application/json
@@ -9,7 +19,83 @@ Content-Type: application/json
   "couponCode": "D15"
 }
 
-### Execute Purchase
+### Расчет цены для iPhone с купоном на фиксированную скидку (Италия, 22% налог)
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "IT12345678900",
+  "couponCode": "D10"
+}
+
+### Расчет цены для наушников без купона (Греция, 24% налог)
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 2,
+  "taxNumber": "GR123456789"
+}
+
+### Расчет цены для чехла с купоном (Франция, 20% налог)
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 3,
+  "taxNumber": "FRAb123456789",
+  "couponCode": "D15"
+}
+
+### Пример ошибки: неверный налоговый номер
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "XX123456789",
+  "couponCode": "D15"
+}
+
+### Пример ошибки: несуществующий купон
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE123456789",
+  "couponCode": "INVALID"
+}
+
+### Пример ошибки: несуществующий продукт
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 999,
+  "taxNumber": "DE123456789"
+}
+
+### Покупка iPhone через PayPal с купоном (Германия, 19% налог)
+POST http://127.0.0.1:8337/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE123456789",
+  "couponCode": "D15",
+  "paymentProcessor": "paypal"
+}
+
+### Покупка iPhone через Stripe без купона (Италия, 22% налог)
 POST http://127.0.0.1:8337/purchase
 Accept: application/json
 Content-Type: application/json
@@ -17,6 +103,37 @@ Content-Type: application/json
 {
   "product": 1,
   "taxNumber": "IT12345678900",
-  "couponCode": "D15",
-  "paymentProcessor": "paypal"
+  "paymentProcessor": "stripe"
+}
+
+### Ошибка при покупке наушников через Stripe (сумма слишком мала)
+POST http://127.0.0.1:8337/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 2,
+  "taxNumber": "DE123456789",
+  "paymentProcessor": "stripe"
+}
+
+### Ошибка при покупке: неизвестный платежный процессор
+POST http://127.0.0.1:8337/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE123456789",
+  "paymentProcessor": "unknown"
+}
+
+### Ошибка валидации: отсутствует обязательное поле
+POST http://127.0.0.1:8337/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE123456789"
 }
