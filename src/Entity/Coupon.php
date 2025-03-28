@@ -2,65 +2,68 @@
 
 namespace App\Entity;
 
+use App\Repository\CouponRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+#[ORM\Entity(repositoryClass: CouponRepository::class)]
 class Coupon
 {
     public const TYPE_FIXED = 'fixed';
     public const TYPE_PERCENTAGE = 'percentage';
 
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
     private ?int $id = null;
-    private string $code;
-    private string $type;
-    private float $value;
+
+    #[ORM\Column(length: 10, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 10)]
+    private ?string $code = null;
+
+    #[ORM\Column]
+    #[Assert\Positive]
+    private ?float $value = null;
+
+    #[ORM\Column]
+    private bool $isPercentage = false;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
-    public function setCode(string $code): self
+    public function setCode(string $code): static
     {
         $this->code = $code;
         return $this;
     }
 
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        if (!in_array($type, [self::TYPE_FIXED, self::TYPE_PERCENTAGE])) {
-            throw new \InvalidArgumentException('Invalid coupon type');
-        }
-        
-        $this->type = $type;
-        return $this;
-    }
-
-    public function getValue(): float
+    public function getValue(): ?float
     {
         return $this->value;
     }
 
-    public function setValue(float $value): self
+    public function setValue(float $value): static
     {
         $this->value = $value;
         return $this;
     }
-    
+
     public function isPercentage(): bool
     {
-        return $this->type === self::TYPE_PERCENTAGE;
+        return $this->isPercentage;
     }
-    
-    public function isFixed(): bool
+
+    public function setIsPercentage(bool $isPercentage): static
     {
-        return $this->type === self::TYPE_FIXED;
+        $this->isPercentage = $isPercentage;
+        return $this;
     }
 } 

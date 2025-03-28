@@ -3,25 +3,28 @@
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\MapRequestPayload;
 use App\Validator\Constraints as CustomAssert;
 
+#[MapRequestPayload]
 class PurchaseRequest
 {
-    #[Assert\NotBlank(message: "Product ID is required")]
-    #[Assert\Type(type: "integer", message: "Product ID must be an integer")]
-    #[Assert\Positive(message: "Product ID must be positive")]
-    private $product;
+    #[Assert\NotNull]
+    #[Assert\Positive]
+    public ?int $product = null;
 
-    #[Assert\NotBlank(message: "Tax number is required")]
-    #[CustomAssert\TaxNumber]
-    private $taxNumber;
+    #[Assert\NotNull]
+    #[Assert\Regex(
+        pattern: '/^(DE|IT|GR|FR)[A-Z0-9]+$/',
+        message: 'Invalid tax number format'
+    )]
+    public ?string $taxNumber = null;
 
-    #[Assert\Type(type: "string", message: "Coupon code must be a string")]
-    private $couponCode;
+    public ?string $couponCode = null;
 
-    #[Assert\NotBlank(message: "Payment processor is required")]
-    #[Assert\Choice(choices: ["paypal", "stripe"], message: "Invalid payment processor. Use 'paypal' or 'stripe'")]
-    private $paymentProcessor;
+    #[Assert\NotNull]
+    #[Assert\Choice(choices: ['paypal', 'stripe'])]
+    public ?string $paymentProcessor = null;
 
     public function getProduct(): int
     {

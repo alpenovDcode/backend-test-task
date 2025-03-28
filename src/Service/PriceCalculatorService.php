@@ -58,12 +58,10 @@ class PriceCalculatorService
     
     private function calculateDiscount(float $basePrice, Coupon $coupon): float
     {
-        if ($coupon->isFixed()) {
+        if (!$coupon->isPercentage()) {
             return min($basePrice, $coupon->getValue());
-        } elseif ($coupon->isPercentage()) {
+        } else {
             return $basePrice * ($coupon->getValue() / 100);
         }
-        
-        return 0;
     }
 } 

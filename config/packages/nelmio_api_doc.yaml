@@ -1,0 +1,59 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Price Calculator API
+            description: API для расчета цены и проведения платежей
+            version: 1.0.0
+        components:
+            schemas:
+                CalculatePriceRequest:
+                    type: object
+                    properties:
+                        product:
+                            type: integer
+                            example: 1
+                            description: ID продукта
+                        taxNumber:
+                            type: string
+                            example: "DE123456789"
+                            description: Налоговый номер
+                        couponCode:
+                            type: string
+                            example: "D15"
+                            description: Код купона (опционально)
+                            nullable: true
+                PurchaseRequest:
+                    type: object
+                    properties:
+                        product:
+                            type: integer
+                            example: 1
+                            description: ID продукта
+                        taxNumber:
+                            type: string
+                            example: "DE123456789"
+                            description: Налоговый номер
+                        couponCode:
+                            type: string
+                            example: "D15"
+                            description: Код купона (опционально)
+                            nullable: true
+                        paymentProcessor:
+                            type: string
+                            example: "paypal"
+                            description: Тип платежного процессора (paypal или stripe)
+                Error:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: Сообщение об ошибке
+                        code:
+                            type: integer
+                            description: Код ошибки
+                            nullable: true
+    areas:
+        path_patterns:
+            - ^/api(?!/doc$)
+            - ^/calculate-price
+            - ^/purchase 
